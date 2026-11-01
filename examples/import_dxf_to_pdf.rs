@@ -1,7 +1,7 @@
 //! Imports an ASTM / AAMA / plain DXF (with its ASTM RUL grade rules) and plots every size of every piece to
 //! one PDF, nested flat on an A0-wide sheet.
 //!
-//! `cargo run --release -p optirust --example import_dxf_to_pdf -- <in.dxf> <out.pdf> [rules.rul]`
+//! `cargo run --release -p rajutara --example import_dxf_to_pdf -- <in.dxf> <out.pdf> [rules.rul]`
 //!
 //! Without `rules.rul` the importer reads the `.rul` file the DXF names in `Grade Rule Table:` from the
 //! DXF's own folder. A `.rul` given on the command line wins.
@@ -10,11 +10,11 @@ use std::error::Error;
 use std::fs;
 use std::path::Path;
 
-use optirust_core::{Severity, validate_style};
-use optirust_io::{DxfImportOptions, PdfPage, import_dxf, parse_dxf, plot_pdf};
-use optirust_pds::plot::job::plot_job;
-use optirust_pds::tools::{FieldValue, Values};
-use optirust_ui::Selection;
+use rajutara_core::{Severity, validate_style};
+use rajutara_io::{DxfImportOptions, PdfPage, import_dxf, parse_dxf, plot_pdf};
+use rajutara_pds::plot::job::plot_job;
+use rajutara_pds::tools::{FieldValue, Values};
+use rajutara_ui::Selection;
 
 type Res<T> = Result<T, Box<dyn Error>>;
 

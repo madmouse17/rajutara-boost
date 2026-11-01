@@ -2709,7 +2709,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "04744f49eae99ab78e0d5c0b603ab218f515ea8cfe5a456d7629ad883a3b6e7d"
 
 [[package]]
-name = "optirust-core"
+name = "rajutara-core"
 version = "1.0.0"
 dependencies = [
  "i_overlay",
@@ -2719,13 +2719,13 @@ dependencies = [
 ]
 
 [[package]]
-name = "optirust-io"
+name = "rajutara-io"
 version = "1.0.0"
 dependencies = [
  "csv",
  "dxf",
  "kurbo",
- "optirust-core",
+ "rajutara-core",
  "pdf-writer",
  "serde",
  "serde_json",
@@ -2734,13 +2734,13 @@ dependencies = [
 ]
 
 [[package]]
-name = "optirust-mcp"
+name = "rajutara-mcp"
 version = "0.1.0"
 dependencies = [
- "optirust-core",
- "optirust-io",
- "optirust-nest",
- "optirust-ui",
+ "rajutara-core",
+ "rajutara-io",
+ "rajutara-nest",
+ "rajutara-ui",
  "rmcp",
  "serde",
  "serde_json",
@@ -2748,7 +2748,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "optirust-nest"
+name = "rajutara-nest"
 version = "1.0.0"
 dependencies = [
  "egui",
@@ -2758,9 +2758,9 @@ dependencies = [
  "kurbo",
  "log",
  "lyon_tessellation",
- "optirust-core",
- "optirust-io",
- "optirust-ui",
+ "rajutara-core",
+ "rajutara-io",
+ "rajutara-ui",
  "rust-embed",
  "serde",
  "serde_json",
@@ -2768,7 +2768,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "optirust-ui"
+name = "rajutara-ui"
 version = "1.0.0"
 dependencies = [
  "directories",
@@ -2781,8 +2781,8 @@ dependencies = [
  "kurbo",
  "log",
  "lyon_tessellation",
- "optirust-core",
- "optirust-io",
+ "rajutara-core",
+ "rajutara-io",
  "rust-embed",
  "serde",
  "serde_json",

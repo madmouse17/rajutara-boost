@@ -1,24 +1,24 @@
-//! The four tool bodies: plain functions over the optirust library crates, no MCP types.
+//! The four tool bodies: plain functions over the rajutara library crates, no MCP types.
 
 use std::path::{Path, PathBuf};
 use std::time::Duration;
 
-use optirust_core::Unit;
-use optirust_core::{Issue, Marker, Severity, Style, grading::piece_for_size, validate_marker};
-use optirust_io::PdfPage;
-use optirust_io::{
+use rajutara_core::Unit;
+use rajutara_core::{Issue, Marker, Severity, Style, grading::piece_for_size, validate_marker};
+use rajutara_io::PdfPage;
+use rajutara_io::{
     DxfImportOptions, ImportIssue, IoError, PlotterSetup, import_dxf, load_cut_plan, load_marker,
     load_style, parse_dxf, save_marker, utc_now_stamp,
 };
-use optirust_nest::engine::{Control, Stop};
-use optirust_nest::marker::instances::ShapeBook;
-use optirust_nest::marker::metrics::{conflicts, metrics};
-use optirust_nest::output::plot::{
+use rajutara_nest::engine::{Control, Stop};
+use rajutara_nest::marker::instances::ShapeBook;
+use rajutara_nest::marker::metrics::{conflicts, metrics};
+use rajutara_nest::output::plot::{
     PlotTarget, header_lines, marker_job, plot_marker, setup_from_json,
 };
-use optirust_nest::report::ReportFmt;
-use optirust_nest::{NestMarkerOptions, nest_marker};
-use optirust_ui::{I18n, Lang};
+use rajutara_nest::report::ReportFmt;
+use rajutara_nest::{NestMarkerOptions, nest_marker};
+use rajutara_ui::{I18n, Lang};
 use serde_json::{Value, json};
 
 /// Findings listed in a reply; the rest is counted.
@@ -157,7 +157,7 @@ pub fn import(dxf: &Path, rul: Option<&Path>) -> ToolResult {
     Ok(json!({
         "kind": "dxf import",
         "summary": style_summary(&style),
-        "validation": issues(&optirust_core::validate_style(&style)),
+        "validation": issues(&rajutara_core::validate_style(&style)),
         "import_issues": import_issues(&found),
     }))
 }
@@ -206,7 +206,7 @@ pub fn plot(optm: &Path, format: &str, out: Option<&Path>) -> ToolResult {
     };
     let path: PathBuf = out.map_or_else(|| optm.with_extension(ext), Path::to_path_buf);
     let mut i18n = I18n::new(Lang::En);
-    i18n.add(optirust_nest::i18n::catalog());
+    i18n.add(rajutara_nest::i18n::catalog());
     let fmt = ReportFmt {
         unit: Unit::Cm,
         decimals: 2,

@@ -1,6 +1,6 @@
 # Grading
 
-Rule-based grading (ADR-0004): geometry for every size is **derived** from the Base Size and Grade Rules; sizes are never stored as separate pieces. Spec: `docs/spec/03-grading.md`. Rule math lives in `optirust-core::grading`; `optirust-grading` decides which rules to write and always asks core for positions.
+Rule-based grading (ADR-0004): geometry for every size is **derived** from the Base Size and Grade Rules; sizes are never stored as separate pieces. Spec: `docs/spec/03-grading.md`. Rule math lives in `rajutara-core::grading`; `rajutara-grading` decides which rules to write and always asks core for positions.
 
 ## Data
 
@@ -11,7 +11,7 @@ Rule-based grading (ADR-0004): geometry for every size is **derived** from the B
 - A contour vertex with no entry is graded in proportion to its neighbouring Grade Points; other points do not move.
 - Notches placed `Between` two vertices (`NotchRelation`) follow the vertices; per-size notch values live in `NotchPlace.per_size`.
 
-## Deriving sizes (`optirust-core`)
+## Deriving sizes (`rajutara-core`)
 
 ```rust sig
 pub fn piece_for_size(piece: &Piece, sizes: &SizeTable, size: usize) -> Piece
@@ -24,7 +24,7 @@ pub fn incremental(rule: &GradeRule, sizes: &SizeTable) -> Vec<Vec2>
 - `incremental`: the size-to-size step view of a rule, zero at the Base Size; for display, not storage.
 
 ```rust
-let style = optirust_io::load_style(path)?.0;
+let style = rajutara_io::load_style(path)?.0;
 let m = style.size_table.index_of("M").ok_or("no size M")?;
 let l = style.size_table.index_of("L").ok_or("no size L")?;
 let front = &style.pieces[0];
@@ -32,7 +32,7 @@ let width = |size| piece_for_size(front, &style.size_table, size).contour.boundi
 println!("L is {:.1} mm wider than M", width(l) - width(m));
 ```
 
-## Editing grading (`optirust-grading`)
+## Editing grading (`rajutara-grading`)
 
 Each operation takes `&Style` and returns a `GradeCommand` (`Edit<Box<dyn FnOnce(&mut Style) -> Result<(), CommandError>>>`) for `Document<Style>::execute`, so it is undoable and validated. `PointRef` is `(PieceId, PointId)`.
 
@@ -71,6 +71,6 @@ pub pieces: Option<Vec<PieceId>>,
 ```
 
 - `run_export` writes an ASTM DXF (plus `.rul` next to it for `GradingExport::RuleFile`) after the grading gate.
-- `run_rul_export` writes the Rule Table only. `created` is `optirust_io::utc_now_stamp()`.
+- `run_rul_export` writes the Rule Table only. `created` is `rajutara_io::utc_now_stamp()`.
 
 Verify grading with a property test (core `grading_props.rs`): the Base Size is unchanged, a zero rule moves nothing, `piece_for_size` of a derived piece is idempotent.

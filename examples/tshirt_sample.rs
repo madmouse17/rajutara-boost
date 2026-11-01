@@ -2,7 +2,7 @@
 //! public basic tee block, graded S / M / L / XL, a one-Bundle-per-size Marker nested on 1800 mm Single
 //! Jersey, and every output of the workflow next to it.
 //!
-//! `cargo run --release -p optirust --example tshirt_sample -- <out_dir>`
+//! `cargo run --release -p rajutara --example tshirt_sample -- <out_dir>`
 //!
 //! The block is plain pattern-making arithmetic for Base Size M (chest 100 cm, body length 70 cm, underarm
 //! sleeve seam 22 cm, neck width 18 cm). Pieces are full (no Mirror Line) so the Marker is realistic; the
@@ -13,31 +13,31 @@ use std::fs;
 use std::path::Path;
 use std::time::Duration;
 
-use optirust_core::grading::piece_for_size;
-use optirust_core::{
+use rajutara_core::grading::piece_for_size;
+use rajutara_core::{
     Annotation, BundleDirection, Contour, Document, EmbeddedStyle, GradeRule, IdAlloc, InstanceId,
     Issue, Marker, Notch, NotchAt, NotchPlace, NotchRelation, NotchShape, NumberedRule, Piece,
     PiecePoint, Point, PointKind, RuleTable, SeamAllowance, SegmentShape, Severity, Size,
     SizeTable, Style, StyleRefId, Unit, Vec2, Vertex, validate_marker, validate_style,
 };
-use optirust_grading::export::{ExportRequest, run_export};
-use optirust_io::{
+use rajutara_grading::export::{ExportRequest, run_export};
+use rajutara_io::{
     GradingExport, PdfPage, embed_style, load_marker, load_style, plot_pdf, save_marker,
     save_style, utc_now_stamp,
 };
-use optirust_nest::engine::{Control, Stop};
-use optirust_nest::marker::commands::{add_style, apply_nest, set_request, set_setup};
-use optirust_nest::marker::instances::ShapeBook;
-use optirust_nest::marker::metrics::{conflicts, metrics};
-use optirust_nest::marker::props::MarkerSetup;
-use optirust_nest::output::plot::{
+use rajutara_nest::engine::{Control, Stop};
+use rajutara_nest::marker::commands::{add_style, apply_nest, set_request, set_setup};
+use rajutara_nest::marker::instances::ShapeBook;
+use rajutara_nest::marker::metrics::{conflicts, metrics};
+use rajutara_nest::marker::props::MarkerSetup;
+use rajutara_nest::output::plot::{
     PlotTarget, header_lines, marker_job, plot_marker, setup_from_json,
 };
-use optirust_nest::report::{ReportFmt, ReportMeta, report_data, write_csv_report};
-use optirust_nest::{NestMarkerOptions, nest_marker};
-use optirust_pds::plot::job::plot_job;
-use optirust_pds::tools::{FieldValue, Values};
-use optirust_ui::{I18n, Lang, Selection};
+use rajutara_nest::report::{ReportFmt, ReportMeta, report_data, write_csv_report};
+use rajutara_nest::{NestMarkerOptions, nest_marker};
+use rajutara_pds::plot::job::plot_job;
+use rajutara_pds::tools::{FieldValue, Values};
+use rajutara_ui::{I18n, Lang, Selection};
 use std::sync::Arc;
 
 type Res<T> = Result<T, Box<dyn Error>>;
@@ -363,7 +363,7 @@ struct Measures {
 
 fn tee_style() -> (Style, Measures) {
     let mut style = Style::new("Kaos Lengan Pendek");
-    style.author = "optirust sample".to_owned();
+    style.author = "rajutara sample".to_owned();
     style.notes = "Basic short-sleeve tee block, Base Size M: chest 100 cm, body length 70 cm, \
                    sleeve seam 22 cm, neck width 18 cm. Seam Allowance 1 cm all round."
         .to_owned();
@@ -552,7 +552,7 @@ fn main() -> Res<()> {
     ensure(nested.unplaced == 0, || {
         format!("{} instance(s) did not fit the fabric", nested.unplaced)
     })?;
-    let moves: Vec<(InstanceId, Option<optirust_core::Pose>)> = nested
+    let moves: Vec<(InstanceId, Option<rajutara_core::Pose>)> = nested
         .marker
         .pieces
         .iter()
@@ -590,7 +590,7 @@ fn main() -> Res<()> {
         decimal_comma: false,
     };
     let mut i18n = I18n::new(Lang::En);
-    i18n.add(optirust_nest::i18n::catalog());
+    i18n.add(rajutara_nest::i18n::catalog());
     let tr = |id: &str| i18n.get(id);
     let header = header_lines(marker, &mut book, &date, &fmt, &tr);
     let job = marker_job(marker, &mut book, &header)?;
@@ -599,7 +599,7 @@ fn main() -> Res<()> {
         &PlotTarget::Pdf(PdfPage::A0),
         &out.join(format!("{STEM}-marker.pdf")),
     )?;
-    let roll = optirust_io::PlotterSetup {
+    let roll = rajutara_io::PlotterSetup {
         paper_width: FABRIC_WIDTH_MM + 100.0,
         ..setup_from_json(None)
     };

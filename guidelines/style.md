@@ -10,9 +10,9 @@
 ## Rust rules
 
 - Edition 2024, stable toolchain from `rust-toolchain.toml`. Follow the project skill `.omp/skills/rust-skills`; priorities: ownership, error handling, API design, memory, performance.
-- Library crates (`optirust-core`, `-io`, `-nest`, ...): no `unwrap`/`expect` outside tests, no `panic!` on user data, errors as `thiserror` enums, `# Errors` section on every fallible public fn. `optirust-core` has no UI or I/O dependency.
-- Geometry in mm as `f64`; never store display units. Tolerances are named constants (`optirust_core::EPS_MM`, `optirust_core::geom`).
-- Every public type in `optirust-core` derives `Debug, Clone, PartialEq, serde::{Serialize, Deserialize}`.
+- Library crates (`rajutara-core`, `-io`, `-nest`, ...): no `unwrap`/`expect` outside tests, no `panic!` on user data, errors as `thiserror` enums, `# Errors` section on every fallible public fn. `rajutara-core` has no UI or I/O dependency.
+- Geometry in mm as `f64`; never store display units. Tolerances are named constants (`rajutara_core::EPS_MM`, `rajutara_core::geom`).
+- Every public type in `rajutara-core` derives `Debug, Clone, PartialEq, serde::{Serialize, Deserialize}`.
 - No async runtime. `std::thread` + `std::sync::mpsc`; the UI polls; support cancellation.
 - New dependency: justify in one line; licence MIT/Apache/BSD/Zlib/MPL-2.0 (see `deny.toml`); prefer crates already in `Cargo.lock`; `cargo deny check` must pass.
 - UI strings through Fluent (`fl!` / `Msg`); English `en` is the source, the `id` `.ftl` updated in the same change.

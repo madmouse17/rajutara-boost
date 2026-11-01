@@ -1,4 +1,4 @@
-# Nesting (`optirust-nest`)
+# Nesting (`rajutara-nest`)
 
 Headless irregular strip packing: no-fit polygons, bottom-left fill, simulated annealing over the piece order, compaction. No UI types in the engine API. Spec: `docs/spec/04-marker.md`.
 
@@ -51,7 +51,7 @@ pub best_efficiency: f64,
 
 ## Building a Marker
 
-`marker_for_ratio` builds a Marker from one planned ratio (used by Cut Plan). For hand-built markers use `MarkerSetup` and the commands, as `crates/optirust/examples/nest_from_optx.rs` does:
+`marker_for_ratio` builds a Marker from one planned ratio (used by Cut Plan). For hand-built markers use `MarkerSetup` and the commands, as `crates/rajutara/examples/nest_from_optx.rs` does:
 
 ```rust sig
 pub fn marker_for_ratio(style: &EmbeddedStyle, material: &Material, max_length: f64, ratio: &[u32], name: &str) -> Marker
@@ -84,5 +84,5 @@ Hpgl(PlotterSetup),
 - `ShapeBook::default()` caches piece shapes; reuse one across `metrics`, `conflicts`, `header_lines`, `marker_job`.
 - `Metrics` has `requested`, `placed`, `used_length`, `efficiency_pct`, `bundles_placed`, `fabric_cost` and more. `Conflicts` lists `overlapping`, `outside`, `in_margin` instance sets; a good marker has `overlap_count() == 0` and empty `in_margin`.
 - `marker_job` returns `PlotError::NothingPlaced` when no instance has a pose. `plot_marker` returns `PlotError::TooWide` for HPGL when the marker is wider than the roll: set `PlotterSetup.paper_width` to fabric width plus margin.
-- `header_lines` needs a translator: `let mut i18n = I18n::new(Lang::En); i18n.add(optirust_nest::i18n::catalog());` then `&|id| i18n.get(id)`. The i18n loaders are process-global; do not switch language in parallel tests.
-- Reports: `report_data` then `write_csv_report`, or `report_doc` then `optirust_io::write_report_pdf`.
+- `header_lines` needs a translator: `let mut i18n = I18n::new(Lang::En); i18n.add(rajutara_nest::i18n::catalog());` then `&|id| i18n.get(id)`. The i18n loaders are process-global; do not switch language in parallel tests.
+- Reports: `report_data` then `write_csv_report`, or `report_doc` then `rajutara_io::write_report_pdf`.

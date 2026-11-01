@@ -1,21 +1,21 @@
 [package]
-name = "optirust-mcp"
+name = "rajutara-mcp"
 version = "0.1.0"
 edition = "2024"
 rust-version = "1.95"
-description = "MCP server (stdio) exposing optirust checks: file smoke test, DXF import summary, nesting, plotting."
+description = "MCP server (stdio) exposing rajutara checks: file smoke test, DXF import summary, nesting, plotting."
 license = "MIT OR Apache-2.0"
 publish = false
 
 # Standalone workspace: never adopted by a parent directory's workspace.
 [workspace]
 
-# The optirust checkout sits next to this repo: ../optirust. Edit the paths if it lives elsewhere.
+# The rajutara checkout sits next to this repo: ../rajutara. Edit the paths if it lives elsewhere.
 [dependencies]
-optirust-core = { path = "../../optirust/crates/optirust-core" }
-optirust-io = { path = "../../optirust/crates/optirust-io" }
-optirust-nest = { path = "../../optirust/crates/optirust-nest" }
-optirust-ui = { path = "../../optirust/crates/optirust-ui" }
+rajutara-core = { path = "../../rajutara/crates/rajutara-core" }
+rajutara-io = { path = "../../rajutara/crates/rajutara-io" }
+rajutara-nest = { path = "../../rajutara/crates/rajutara-nest" }
+rajutara-ui = { path = "../../rajutara/crates/rajutara-ui" }
 rmcp = { version = "3.8", features = ["server", "transport-io"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"

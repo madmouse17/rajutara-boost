@@ -1,14 +1,14 @@
 ---
-name: optirust
-description: Use when building on or changing optirust (apparel CAD in Rust: Style/Piece/Marker/CutPlan model, DXF/RUL/HPGL/PDF I/O, nesting, grading, cut plan, egui workspace modules).
+name: rajutara
+description: Use when building on or changing rajutara (apparel CAD in Rust: Style/Piece/Marker/CutPlan model, DXF/RUL/HPGL/PDF I/O, nesting, grading, cut plan, egui workspace modules).
 ---
 
-# optirust
+# rajutara
 
-Read `guidelines/optirust.md` first (invariants: mm `f64`, no panic on user data, determinism, clean room), then only the guideline that matches the task:
+Read `guidelines/rajutara.md` first (invariants: mm `f64`, no panic on user data, determinism, clean room), then only the guideline that matches the task:
 
 - `guidelines/core-model.md` — Style, Piece, Contour, Notch, SizeTable, GradeRule, Marker, CutPlan, validation, undo.
-- `guidelines/io.md` — every loader and writer of `optirust-io`.
+- `guidelines/io.md` — every loader and writer of `rajutara-io`.
 - `guidelines/nesting.md` — `nest_marker`, options, determinism, plotting a marker.
 - `guidelines/grading.md` — deriving sizes, editing rules, RUL export.
 - `guidelines/cutplan.md` — Orders, lay solver, results, reports.

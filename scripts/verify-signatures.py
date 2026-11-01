@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Checks every line of every ```rust sig fence in guidelines/*.md against an optirust checkout.
+"""Checks every line of every ```rust sig fence in guidelines/*.md against an rajutara checkout.
 
-Usage: scripts/verify-signatures.py [path/to/optirust]   (default: ../optirust)
+Usage: scripts/verify-signatures.py [path/to/rajutara]   (default: ../rajutara)
 
 A line passes when it occurs, whitespace-normalised, in the checkout's crates/**/*.rs;\na `pub fn` line must also end exactly where the source signature ends.
 """
@@ -9,7 +9,7 @@ import pathlib
 import re
 import sys
 
-root = pathlib.Path(sys.argv[1] if len(sys.argv) > 1 else "../optirust")
+root = pathlib.Path(sys.argv[1] if len(sys.argv) > 1 else "../rajutara")
 here = pathlib.Path(__file__).resolve().parent.parent
 
 

@@ -1,10 +1,10 @@
-# File I/O (`optirust-io`)
+# File I/O (`rajutara-io`)
 
-Every public loader and writer, re-exported at the crate root: `use optirust_io::{load_style, ...}`. Failures are `IoError` (`Io`, `Format`, `NewerVersion`, `Invalid(Vec<Issue>)`, `Dxf`, `Refused`, `Cancelled`); anything an importer or exporter skipped or approximated comes back as `Vec<ImportIssue>` (`severity`, `location`, `message`). Show the issues; never discard them.
+Every public loader and writer, re-exported at the crate root: `use rajutara_io::{load_style, ...}`. Failures are `IoError` (`Io`, `Format`, `NewerVersion`, `Invalid(Vec<Issue>)`, `Dxf`, `Refused`, `Cancelled`); anything an importer or exporter skipped or approximated comes back as `Vec<ImportIssue>` (`severity`, `location`, `message`). Show the issues; never discard them.
 
 ## Native files
 
-`.optx` Style, `.optm` Marker, `.optc` Cut Plan: a zip container with `manifest.json` (`format`, `version`, `generator`) and `document.json`. A file saved by a newer optirust is refused (`NewerVersion`). Loaders validate: errors refuse the file (`IoError::Invalid`), warnings are returned.
+`.optx` Style, `.optm` Marker, `.optc` Cut Plan: a zip container with `manifest.json` (`format`, `version`, `generator`) and `document.json`. A file saved by a newer rajutara is refused (`NewerVersion`). Loaders validate: errors refuse the file (`IoError::Invalid`), warnings are returned.
 
 ```rust sig
 pub fn load_style(path: &Path) -> Result<(Style, Vec<Issue>), IoError>
@@ -58,7 +58,7 @@ pub fn write_rul_atomic(path: &Path, table: &RuleTable, sizes: &SizeTable, opts:
 
 ## Plots: HPGL/2 and PDF
 
-A `PlotJob` is a `sheet: Rect` plus `PlotItem`s (`kind: PlotKind`, a `BezPath`, optional text). Build it with `optirust_pds::plot::job::plot_job` (pieces) or `optirust_nest::output::plot::marker_job` (marker).
+A `PlotJob` is a `sheet: Rect` plus `PlotItem`s (`kind: PlotKind`, a `BezPath`, optional text). Build it with `rajutara_pds::plot::job::plot_job` (pieces) or `rajutara_nest::output::plot::marker_job` (marker).
 
 ```rust sig
 pub fn render_hpgl(job: &PlotJob, setup: &PlotterSetup) -> Result<(Vec<u8>, Vec<ImportIssue>), IoError>

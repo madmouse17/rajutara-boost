@@ -1,4 +1,4 @@
-//! optirust MCP server over stdio. Tools: `optirust_smoke`, `optirust_import_dxf`, `optirust_nest`, `optirust_plot`.
+//! rajutara MCP server over stdio. Tools: `rajutara_smoke`, `rajutara_import_dxf`, `rajutara_nest`, `rajutara_plot`.
 
 mod tools;
 
@@ -48,21 +48,21 @@ fn reply(result: tools::ToolResult) -> Result<String, String> {
 }
 
 #[derive(Clone)]
-struct Optirust;
+struct Rajutara;
 
 #[tool_router(server_handler)]
-impl Optirust {
+impl Rajutara {
     #[tool(
         description = "Load a .optx/.optm/.optc/.dxf file, validate it and summarise it (pieces, sizes, issues)."
     )]
-    fn optirust_smoke(&self, Parameters(p): Parameters<SmokeParams>) -> Result<String, String> {
+    fn rajutara_smoke(&self, Parameters(p): Parameters<SmokeParams>) -> Result<String, String> {
         reply(tools::smoke(Path::new(&p.path)))
     }
 
     #[tool(
         description = "Import an ASTM/AAMA/plain DXF (+ RUL grade rules) and return a Style summary with import and validation issues."
     )]
-    fn optirust_import_dxf(
+    fn rajutara_import_dxf(
         &self,
         Parameters(p): Parameters<ImportParams>,
     ) -> Result<String, String> {
@@ -75,7 +75,7 @@ impl Optirust {
     #[tool(
         description = "Nest a Marker for `seconds` and return efficiency, length, unplaced count and overlaps."
     )]
-    fn optirust_nest(&self, Parameters(p): Parameters<NestParams>) -> Result<String, String> {
+    fn rajutara_nest(&self, Parameters(p): Parameters<NestParams>) -> Result<String, String> {
         reply(tools::nest(
             Path::new(&p.optm),
             p.seconds,
@@ -84,7 +84,7 @@ impl Optirust {
     }
 
     #[tool(description = "Plot a nested Marker as pdf or hpgl and return the written path.")]
-    fn optirust_plot(&self, Parameters(p): Parameters<PlotParams>) -> Result<String, String> {
+    fn rajutara_plot(&self, Parameters(p): Parameters<PlotParams>) -> Result<String, String> {
         reply(tools::plot(
             Path::new(&p.optm),
             &p.format,
@@ -95,6 +95,6 @@ impl Optirust {
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    Optirust.serve(stdio()).await?.waiting().await?;
+    Rajutara.serve(stdio()).await?.waiting().await?;
     Ok(())
 }

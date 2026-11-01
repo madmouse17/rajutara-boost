@@ -1,7 +1,7 @@
 //! Style (`.optx`) -> Marker -> Nesting -> HPGL/2 plot, headless: one Bundle of every size of the Style, nested
 //! on a fabric of the given width, saved as `.optm` and plotted as `.plt` next to `<out_stem>`.
 //!
-//! `cargo run --release -p optirust --example nest_from_optx -- <style.optx> <out_stem> [seconds=10] [width_mm=1800]`
+//! `cargo run --release -p rajutara --example nest_from_optx -- <style.optx> <out_stem> [seconds=10] [width_mm=1800]`
 //!
 //! The Marker uses the Material of the first piece that names one, else the Style's default Material.
 
@@ -9,19 +9,19 @@ use std::error::Error;
 use std::path::Path;
 use std::time::Duration;
 
-use optirust_core::{
+use rajutara_core::{
     BundleDirection, Document, InstanceId, Pose, StyleRefId, Unit, validate_marker,
 };
-use optirust_io::{PlotterSetup, embed_style, save_marker, utc_now_stamp};
-use optirust_nest::engine::{Control, Stop};
-use optirust_nest::marker::commands::{add_style, apply_nest, set_request, set_setup};
-use optirust_nest::marker::instances::ShapeBook;
-use optirust_nest::marker::metrics::metrics;
-use optirust_nest::marker::props::MarkerSetup;
-use optirust_nest::output::plot::{PlotTarget, header_lines, marker_job, plot_marker};
-use optirust_nest::report::ReportFmt;
-use optirust_nest::{NestMarkerOptions, nest_marker};
-use optirust_ui::{I18n, Lang};
+use rajutara_io::{PlotterSetup, embed_style, save_marker, utc_now_stamp};
+use rajutara_nest::engine::{Control, Stop};
+use rajutara_nest::marker::commands::{add_style, apply_nest, set_request, set_setup};
+use rajutara_nest::marker::instances::ShapeBook;
+use rajutara_nest::marker::metrics::metrics;
+use rajutara_nest::marker::props::MarkerSetup;
+use rajutara_nest::output::plot::{PlotTarget, header_lines, marker_job, plot_marker};
+use rajutara_nest::report::ReportFmt;
+use rajutara_nest::{NestMarkerOptions, nest_marker};
+use rajutara_ui::{I18n, Lang};
 
 type Res<T> = Result<T, Box<dyn Error>>;
 
@@ -107,14 +107,14 @@ fn main() -> Res<()> {
         decimal_comma: false,
     };
     let mut i18n = I18n::new(Lang::En);
-    i18n.add(optirust_nest::i18n::catalog());
+    i18n.add(rajutara_nest::i18n::catalog());
     let header = header_lines(marker, &mut book, &utc_now_stamp(), &fmt, &|id| {
         i18n.get(id)
     });
     let job = marker_job(marker, &mut book, &header)?;
     let roll = PlotterSetup {
         paper_width: width + 100.0,
-        ..optirust_nest::output::plot::setup_from_json(None)
+        ..rajutara_nest::output::plot::setup_from_json(None)
     };
     let plt = format!("{stem}.plt");
     plot_marker(&job, &PlotTarget::Hpgl(roll), Path::new(&plt))?;

@@ -1,6 +1,6 @@
-# Core model (`optirust-core`)
+# Core model (`rajutara-core`)
 
-Condensed from `docs/spec/01-core-model.md`. Everything is re-exported at the crate root: `use optirust_core::{Style, Piece, ...}`. Geometry types are `kurbo` (`Point`, `Vec2`, `Rect`, `BezPath`), re-exported.
+Condensed from `docs/spec/01-core-model.md`. Everything is re-exported at the crate root: `use rajutara_core::{Style, Piece, ...}`. Geometry types are `kurbo` (`Point`, `Vec2`, `Rect`, `BezPath`), re-exported.
 
 Unit: mm, `f64`. Ids are typed newtypes (`PieceId`, `PointId`, `NotchId`, ...) handed out by an `IdAlloc` that lives in the document (`style.ids`, `marker.ids`, `plan.ids`): `ids.next()` infers the id type from where it is used. Never invent or reuse an id.
 
@@ -160,7 +160,7 @@ pub flip: Flip,
 
 ## CutPlan
 
-The Lays that cut one `Order` from one `Material`. Behaviour is in `optirust-cutplan` (`cutplan.md`).
+The Lays that cut one `Order` from one `Material`. Behaviour is in `rajutara-cutplan` (`cutplan.md`).
 
 ```rust sig
 pub struct Order {
@@ -196,7 +196,7 @@ pub plies: u32,
 
 ## Validation
 
-Validate before you trust a document and refuse on `Severity::Error`; warnings ride along. Loaders in `optirust-io` already do this.
+Validate before you trust a document and refuse on `Severity::Error`; warnings ride along. Loaders in `rajutara-io` already do this.
 
 ```rust sig
 pub enum Severity {
