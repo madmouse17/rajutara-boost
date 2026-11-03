@@ -93,6 +93,10 @@ fn marker_summary(marker: &Marker) -> Value {
         "styles": marker.styles.len(),
         "instances": figures.requested,
         "placed": figures.placed,
+        "pinned": marker.pieces.iter().filter(|p| p.pinned).count(),
+        "clusters": marker.clusters.len(),
+        "cut_order_steps": marker.cut_order.len(),
+        "flaws": marker.flaws.len(),
         "used_length_mm": round2(figures.used_length),
         "efficiency_pct": round2(figures.efficiency_pct),
     })
@@ -102,26 +106,27 @@ fn round2(v: f64) -> f64 {
     (v * 100.0).round() / 100.0
 }
 
-/// Loads `path` by extension (`.optx`, `.optm`, `.optc`, `.dxf`), validates it and summarises it.
+/// Loads `path` by extension (`.rjx`, `.rjm`, `.rjc`, `.dxf`; the pre-rename `.optx`, `.optm`, `.optc` too),
+/// validates it and summarises it.
 pub fn smoke(path: &Path) -> ToolResult {
     let ext = path
         .extension()
         .map(|e| e.to_string_lossy().to_ascii_lowercase())
         .unwrap_or_default();
     match ext.as_str() {
-        "optx" => {
+        "rjx" | "optx" => {
             let (style, found) = load_style(path).map_err(io_err)?;
             Ok(
                 json!({ "kind": "style", "summary": style_summary(&style), "issues": issues(&found) }),
             )
         }
-        "optm" => {
+        "rjm" | "optm" => {
             let (marker, found) = load_marker(path).map_err(io_err)?;
             Ok(
                 json!({ "kind": "marker", "summary": marker_summary(&marker), "issues": issues(&found) }),
             )
         }
-        "optc" => {
+        "rjc" | "optc" => {
             let (plan, found) = load_cut_plan(path).map_err(io_err)?;
             Ok(json!({
                 "kind": "cut plan",
@@ -135,7 +140,7 @@ pub fn smoke(path: &Path) -> ToolResult {
         }
         "dxf" => import(path, None),
         _ => Err(format!(
-            "{}: expected .optx, .optm, .optc or .dxf",
+            "{}: expected .rjx, .rjm, .rjc or .dxf",
             path.display()
         )),
     }
@@ -163,11 +168,11 @@ pub fn import(dxf: &Path, rul: Option<&Path>) -> ToolResult {
 }
 
 /// Auto-nests every waiting instance of the marker for `seconds`; saves the result to `out` when given.
-pub fn nest(optm: &Path, seconds: u64, out: Option<&Path>) -> ToolResult {
+pub fn nest(marker: &Path, seconds: u64, out: Option<&Path>) -> ToolResult {
     if seconds == 0 {
         return Err("seconds must be at least 1".to_owned());
     }
-    let (marker, _) = load_marker(optm).map_err(io_err)?;
+    let (marker, _) = load_marker(marker).map_err(io_err)?;
     let options = NestMarkerOptions {
         stop: Stop::Time(Duration::from_secs(seconds)),
         ..NestMarkerOptions::default()
@@ -191,8 +196,8 @@ pub fn nest(optm: &Path, seconds: u64, out: Option<&Path>) -> ToolResult {
 }
 
 /// Plots the placed pieces of the marker as `pdf` (A0) or `hpgl` (roll as wide as the fabric plus 100 mm).
-pub fn plot(optm: &Path, format: &str, out: Option<&Path>) -> ToolResult {
-    let (marker, _) = load_marker(optm).map_err(io_err)?;
+pub fn plot(file: &Path, format: &str, out: Option<&Path>) -> ToolResult {
+    let (marker, _) = load_marker(file).map_err(io_err)?;
     let (target, ext) = match format {
         "pdf" => (PlotTarget::Pdf(PdfPage::A0), "pdf"),
         "hpgl" => (
@@ -204,7 +209,7 @@ pub fn plot(optm: &Path, format: &str, out: Option<&Path>) -> ToolResult {
         ),
         other => return Err(format!("format must be \"pdf\" or \"hpgl\", got {other:?}")),
     };
-    let path: PathBuf = out.map_or_else(|| optm.with_extension(ext), Path::to_path_buf);
+    let path: PathBuf = out.map_or_else(|| file.with_extension(ext), Path::to_path_buf);
     let mut i18n = I18n::new(Lang::En);
     i18n.add(rajutara_nest::i18n::catalog());
     let fmt = ReportFmt {

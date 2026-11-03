@@ -7,7 +7,7 @@ Read this file first, then only the guideline that matches your task:
 | Task | File |
 |---|---|
 | Build or edit a `Style`, `Piece`, `Marker`, `CutPlan` | `core-model.md` |
-| Read or write `.optx` `.optm` `.optc` DXF RUL HPGL PDF CSV | `io.md` |
+| Read or write `.rjx` `.rjm` `.rjc` DXF RUL HPGL PDF CSV XLSX | `io.md` |
 | Nest a marker | `nesting.md` |
 | Grade pieces, write RUL | `grading.md` |
 | Plan lays from an Order | `cutplan.md` |
@@ -22,12 +22,12 @@ Dependency direction: `core` <- `io` <- `ui` <- {`pds`, `grading`, `nest`, `cutp
 | Crate | Owns |
 |---|---|
 | `rajutara-core` | Domain model, geometry, grading derivation, undo (`Command`, `Document`), units, validation. No UI, no I/O. |
-| `rajutara-io` | `.optx`/`.optm`/`.optc` container, ASTM D6673 / AAMA-292 DXF, ASTM RUL, HPGL/2, PDF, CSV, atomic writes. |
+| `rajutara-io` | `.rjx`/`.rjm`/`.rjc` container, ASTM D6673 / AAMA-292 DXF, ASTM RUL, HPGL/2, PDF, CSV, Excel `.xlsx`, atomic writes. |
 | `rajutara-ui` | Shell: `Module` trait, actions, docs, canvas, Fluent i18n, preferences, jobs. |
 | `rajutara-pds` | Pattern Design System workspace and the Plot dialog's `plot_job`. |
 | `rajutara-grading` | Grading workspace: Size Table and Rule Table commands, grading export. |
-| `rajutara-nest` | Marker workspace and the headless Nesting engine (`nest_marker`). |
-| `rajutara-cutplan` | Orders, Lay solver, consumption, reports. |
+| `rajutara-nest` | Marker workspace and the headless Nesting engine (`nest_marker`); clusters, Fuse Blocks, flaws, Cutting Order, cut file. |
+| `rajutara-cutplan` | Orders, Lay solver, consumption, reports, the Create New wizard. |
 | `rajutara` | The binary: argument parsing and module registration. Examples live in `crates/rajutara/examples/`. |
 
 ## Invariants (never break these)
@@ -39,7 +39,8 @@ Dependency direction: `core` <- `io` <- `ui` <- {`pds`, `grading`, `nest`, `cutp
 - **Clean room (ADR-0001).** Never open, read, decompile or reference any Optitex binary, installer, sample, icon or help file. Optitex behaviour comes from public documentation only; cite the URL in the spec you change. No GPL code (ADR-0002); Seamly2D/Valentina are behaviour references only.
 - **No async runtime.** Long work runs on `std::thread` plus `std::sync::mpsc`; the UI polls.
 - **Every public type in `rajutara-core`** derives `Debug, Clone, PartialEq, Serialize, Deserialize`.
+- **Optitex names.** Every action label is the name the public Optitex help uses, carried as a `.optitex` attribute in both Fluent files; `crates/rajutara/tests/all/optitex_names.rs` enforces it (`testing.md`). Keys follow the public Optitex lists. rajutara is not affiliated with Optitex: names only, never files.
 
 ## Toolchain
 
-Rust stable (`rust-toolchain.toml`: 1.99.1, edition 2024, resolver 3, MSRV 1.95). Gates are in `testing.md`.
+Rust stable (`rust-toolchain.toml`: 1.99.1, edition 2024, resolver 3, MSRV 1.95). Workspace version 1.5.0. Gates, the test layout and build speed-ups are in `testing.md`.

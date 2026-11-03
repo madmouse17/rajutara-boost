@@ -1,7 +1,7 @@
-//! Style (`.optx`) -> Marker -> Nesting -> HPGL/2 plot, headless: one Bundle of every size of the Style, nested
-//! on a fabric of the given width, saved as `.optm` and plotted as `.plt` next to `<out_stem>`.
+//! Style (`.rjx`) -> Marker -> Nesting -> HPGL/2 plot, headless: one Bundle of every size of the Style, nested
+//! on a fabric of the given width, saved as `.rjm` and plotted as `.plt` next to `<out_stem>`.
 //!
-//! `cargo run --release -p rajutara --example nest_from_optx -- <style.optx> <out_stem> [seconds=10] [width_mm=1800]`
+//! `cargo run --release -p rajutara --example nest_from_rjx -- <style.rjx> <out_stem> [seconds=10] [width_mm=1800]`
 //!
 //! The Marker uses the Material of the first piece that names one, else the Style's default Material.
 
@@ -29,13 +29,13 @@ const BUFFER_MM: f64 = 5.0;
 
 fn main() -> Res<()> {
     let mut args = std::env::args().skip(1);
-    let (Some(optx), Some(stem)) = (args.next(), args.next()) else {
-        return Err("usage: nest_from_optx <style.optx> <out_stem> [seconds] [width_mm]".into());
+    let (Some(rjx), Some(stem)) = (args.next(), args.next()) else {
+        return Err("usage: nest_from_rjx <style.rjx> <out_stem> [seconds] [width_mm]".into());
     };
     let seconds: u64 = args.next().map_or(Ok(10), |s| s.parse())?;
     let width: f64 = args.next().map_or(Ok(1800.0), |s| s.parse())?;
 
-    let (embedded, issues) = embed_style(Path::new(&optx), StyleRefId::from(0))?;
+    let (embedded, issues) = embed_style(Path::new(&rjx), StyleRefId::from(0))?;
     println!(
         "style {:?}: {} load issue(s)",
         embedded.style.name,
@@ -98,8 +98,8 @@ fn main() -> Res<()> {
         figures.placed, figures.requested
     );
 
-    let optm = format!("{stem}.optm");
-    save_marker(marker, Path::new(&optm))?;
+    let rjm = format!("{stem}.rjm");
+    save_marker(marker, Path::new(&rjm))?;
 
     let fmt = ReportFmt {
         unit: Unit::Cm,
@@ -118,6 +118,6 @@ fn main() -> Res<()> {
     };
     let plt = format!("{stem}.plt");
     plot_marker(&job, &PlotTarget::Hpgl(roll), Path::new(&plt))?;
-    println!("wrote {optm} and {plt}");
+    println!("wrote {rjm} and {plt}");
     Ok(())
 }

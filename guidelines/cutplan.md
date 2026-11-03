@@ -49,7 +49,7 @@ pub const NEST_SEED_BASE: u64 = 1;
 
 - `nest_plan`: solve, nest every distinct ratio with `nester`, re-solve once if a nested marker is longer than the table. `on_step(done, total)` reports progress; `cancelled` is polled before each marker. Runs on a worker thread.
 - `EngineNester` is the real engine (`marker_for_ratio` then `rajutara_nest::nest_marker`); marker `i` uses seed `NEST_SEED_BASE + i`. Use `NestStop::Iterations` in tests for determinism. A test double implements `RatioNester`.
-- `save_markers` writes `<stem>-M<n>.optm` for each nested marker.
+- `save_markers` writes `<stem>-M<n>.rjm` for each nested marker.
 
 ## Results and reports
 

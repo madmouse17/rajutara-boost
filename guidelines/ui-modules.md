@@ -20,8 +20,8 @@ fn catalog(&self) -> Option<Catalog> {
 fn on_job(&mut self, _event: JobEvent, _shell: &mut ShellCtx) {}
 ```
 
-- Required: `id`, `default_layout`, `menus`, `toolbars`, `pane_title`, `pane_ui`, `status`, `actions`, `run`, `open`. Optional with defaults: `catalog`, `extend_menu`, `on_file`, `on_job`, `pref_pages`, `pref_ui`.
-- `open` returns `true` when the module opened `path`; the shell opens `.optx`, `.optm`, `.optc` itself and offers the rest (e.g. `.dxf`) to modules.
+- Required: `id`, `default_layout`, `menus`, `toolbars`, `pane_title`, `pane_ui`, `status`, `actions`, `run`, `open`. Optional with defaults: `catalog`, `extend_menu`, `on_file`, `on_job`, `pref_pages`, `dialogs` (windows the module draws even with no document open, e.g. the DXF import wizard), `pref_ui`.
+- `open` returns `true` when the module opened `path`; the shell opens `.rjx`, `.rjm`, `.rjc` (and the legacy `.optx`, `.optm`, `.optc`) itself and offers the rest (e.g. `.dxf`) to modules.
 - `run` is called only after the shell checked the action is enabled.
 - `WorkspaceId` is a closed enum (`Pds`, `Grading`, `Marker`, `CutPlan`); a fifth workspace means a new variant, `ALL`, `message_id`, `key` and a `layout::` default.
 
@@ -34,6 +34,7 @@ fn on_job(&mut self, _event: JobEvent, _shell: &mut ShellCtx) {}
 5. Strings go through Fluent. Crate `i18n.toml` (`fallback_language = "en"`, `assets_dir = "i18n"`, `domain = "rajutara_<name>"`), files `i18n/en/rajutara_<name>.ftl` and `i18n/id/rajutara_<name>.ftl`. In `src/i18n.rs` define `Localizations` (`RustEmbed`, folder `i18n/`), a static `LOADER` built with `rajutara_ui::i18n::new_loader(fluent_language_loader!(), &Localizations)`, and `catalog()` returning `rajutara_ui::Catalog::new(&LOADER, &Localizations)`. Return it from `Module::catalog`. UI text uses `fl!` or `Msg::new("message-id")`; English is the source and the `id` file is updated in the same change.
 6. Long work (nesting, plot, import, export) runs on `std::thread` + `std::sync::mpsc` through the shell's jobs (`JobEvent` arrives in `on_job`); poll, never block the UI thread; support cancel.
 7. Register in `crates/rajutara/src/modules.rs`: add `Box::new(rajutara_<name>::<Name>Module::default())` to `register_modules()`. A workspace is registered at most once (the file's test checks it).
-8. Tests (see `testing.md`): logic tests in the crate; `i18n.rs` tests `assert_parity(&Localizations, "rajutara_<name>")` and that every message id the crate looks up exists in `en` and `id`; UI behaviour with `egui_kittest` by label.
+8. Every action message carries a `.optitex` attribute with the public Optitex name, repeated word for word in the `id` file, and the English label equals it (`testing.md`, Optitex names); add the crate to `CRATES` in `crates/rajutara/tests/all/optitex_names.rs`.
+9. Tests (see `testing.md`): logic tests in the crate; `i18n.rs` tests `assert_parity(&Localizations, "rajutara_<name>")` and that every message id the crate looks up exists in `en` and `id`; UI behaviour with `egui_kittest` by label.
 
 Do not use `egui` immediate-mode state to hold document data; panes read the document each frame and emit commands.

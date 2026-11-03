@@ -11,7 +11,7 @@ use serde::Deserialize;
 
 #[derive(Debug, Deserialize, schemars::JsonSchema)]
 struct SmokeParams {
-    /// Absolute path of a `.optx`, `.optm`, `.optc` or `.dxf` file.
+    /// Absolute path of a `.rjx`, `.rjm`, `.rjc` or `.dxf` file (the pre-rename `.optx`, `.optm`, `.optc` too).
     path: String,
 }
 
@@ -25,8 +25,8 @@ struct ImportParams {
 
 #[derive(Debug, Deserialize, schemars::JsonSchema)]
 struct NestParams {
-    /// Absolute path of a Marker (`.optm`) with instances waiting in the Piece Bar.
-    optm: String,
+    /// Absolute path of a Marker (`.rjm`) with instances waiting in the Piece Bar.
+    marker: String,
     /// Wall-clock limit of the nesting run, at least 1.
     seconds: u64,
     /// Where to save the nested Marker; omitted: nothing is written.
@@ -35,8 +35,8 @@ struct NestParams {
 
 #[derive(Debug, Deserialize, schemars::JsonSchema)]
 struct PlotParams {
-    /// Absolute path of a nested Marker (`.optm`).
-    optm: String,
+    /// Absolute path of a nested Marker (`.rjm`).
+    marker: String,
     /// `pdf` (A0) or `hpgl` (HPGL/2 for a roll plotter).
     format: String,
     /// Output file; omitted: next to the Marker with extension `.pdf` / `.plt`.
@@ -53,7 +53,7 @@ struct Rajutara;
 #[tool_router(server_handler)]
 impl Rajutara {
     #[tool(
-        description = "Load a .optx/.optm/.optc/.dxf file, validate it and summarise it (pieces, sizes, issues)."
+        description = "Load a .rjx/.rjm/.rjc/.dxf file, validate it and summarise it (pieces, sizes, issues)."
     )]
     fn rajutara_smoke(&self, Parameters(p): Parameters<SmokeParams>) -> Result<String, String> {
         reply(tools::smoke(Path::new(&p.path)))
@@ -77,7 +77,7 @@ impl Rajutara {
     )]
     fn rajutara_nest(&self, Parameters(p): Parameters<NestParams>) -> Result<String, String> {
         reply(tools::nest(
-            Path::new(&p.optm),
+            Path::new(&p.marker),
             p.seconds,
             p.out.as_deref().map(Path::new),
         ))
@@ -86,7 +86,7 @@ impl Rajutara {
     #[tool(description = "Plot a nested Marker as pdf or hpgl and return the written path.")]
     fn rajutara_plot(&self, Parameters(p): Parameters<PlotParams>) -> Result<String, String> {
         reply(tools::plot(
-            Path::new(&p.optm),
+            Path::new(&p.marker),
             &p.format,
             p.out.as_deref().map(Path::new),
         ))

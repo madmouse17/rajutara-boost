@@ -8,7 +8,7 @@
 
 <p align="center">
   <img alt="Licence: MIT or Apache-2.0" src="https://img.shields.io/badge/licence-MIT%20OR%20Apache--2.0-d85820">
-  <img alt="Signatures verified against rajutara 1.0.0" src="https://img.shields.io/badge/signatures-verified%20against%201.0.0-111c2e">
+  <img alt="Signatures verified against rajutara 1.5.0" src="https://img.shields.io/badge/signatures-verified%20against%201.5.0-111c2e">
 </p>
 
 rajutara is a clean-room Rust rewrite of an apparel CAD suite: pattern design, grading, marker nesting and cut planning, as an `egui` app and as headless crates. An agent that has never seen it guesses at the model (millimetres, derived grading, `Stop::Time` vs `Stop::Iterations`) and breaks its rules. rajutara-boost gives the agent the facts, in the shape [Laravel Boost](https://github.com/laravel/boost) does for Laravel: guidelines it loads, an API reference with real signatures, examples that compile, and an MCP server that runs checks.
@@ -18,13 +18,13 @@ rajutara is a clean-room Rust rewrite of an apparel CAD suite: pattern design, g
 | Path | What | Agent use |
 |---|---|---|
 | [`guidelines/rajutara.md`](guidelines/rajutara.md) | What rajutara is, crate map, invariants (mm `f64`, no panic on user data, determinism, clean room). | Always on. |
-| [`guidelines/core-model.md`](guidelines/core-model.md) | `Style`, `Piece`, `Contour`, `Notch`, `SizeTable`, `GradeRule`, `Marker`, `CutPlan` with real signatures. | Load when touching the model. |
-| [`guidelines/io.md`](guidelines/io.md) | Every public loader and writer: `.optx` `.optm` `.optc`, DXF, RUL, HPGL/2, PDF, CSV. | Load for file work. |
-| [`guidelines/nesting.md`](guidelines/nesting.md) | `nest_marker`, options, `Stop`, determinism, time limits, plotting. | Load for marker work. |
+| [`guidelines/core-model.md`](guidelines/core-model.md) | `Style`, `Piece`, `Contour`, `Notch`, `SizeTable`, `GradeRule`, `Marker` (clusters, cut order, flaws, bump lines, texts), `CutPlan` with real signatures. | Load when touching the model. |
+| [`guidelines/io.md`](guidelines/io.md) | Every public loader and writer: `.rjx` `.rjm` `.rjc`, DXF, RUL, HPGL/2, PDF, CSV, Excel `.xlsx`. | Load for file work. |
+| [`guidelines/nesting.md`](guidelines/nesting.md) | `nest_marker`, options, `Stop`, determinism, time limits, clusters, flaws, Cutting Order, plotting. | Load for marker work. |
 | [`guidelines/grading.md`](guidelines/grading.md), [`cutplan.md`](guidelines/cutplan.md) | Deriving sizes, rule commands, RUL export; Orders, lay solver, reports. | Load per workspace. |
 | [`guidelines/ui-modules.md`](guidelines/ui-modules.md) | Adding a workspace `Module`. | Load for UI work. |
-| [`guidelines/testing.md`](guidelines/testing.md), [`style.md`](guidelines/style.md) | Gates, kittest, insta, proptest; the code rules of `AGENTS.md`. | Load before you claim done. |
-| [`examples/`](examples/) | `tshirt_sample.rs`, `import_dxf_to_pdf.rs`, `nest_from_optx.rs`; compiled against rajutara 1.0.0. | Copy and adapt. |
+| [`guidelines/testing.md`](guidelines/testing.md), [`style.md`](guidelines/style.md) | Gates, the one-binary test layout, mold and nextest, the Optitex-names test, kittest, insta, proptest; the code rules of `AGENTS.md`. | Load before you claim done. |
+| [`examples/`](examples/) | `tshirt_sample.rs`, `import_dxf_to_pdf.rs`, `nest_from_rjx.rs`; compiled against rajutara 1.5.0. | Copy and adapt. |
 | [`mcp/`](mcp/) | Rust MCP server: `rajutara_smoke`, `rajutara_import_dxf`, `rajutara_nest`, `rajutara_plot`. | Let the agent check its work. |
 | [`skills/rajutara/`](skills/rajutara/) | The guidelines packaged as an agent skill. | Skill-aware agents. |
 | [`scripts/verify-signatures.py`](scripts/verify-signatures.py) | Checks every signature in the guidelines against a checkout. | Run after an rajutara update. |
@@ -84,13 +84,13 @@ All three examples and what they print: [`examples/README.md`](examples/README.m
 
 ## Keeping it true
 
-Signatures in the guidelines sit in fenced blocks tagged ```` ```rust sig ````. After an rajutara change:
+Signatures in the guidelines sit in fenced blocks tagged ```` ```rust sig ````. The pack's version follows the rajutara release it was checked against; [`CHANGELOG.md`](CHANGELOG.md) says what changed. After an rajutara change:
 
 ```sh
 scripts/verify-signatures.py ~/src/rajutara     # exit 1 and the list of stale lines on drift
 ```
 
-Verified against rajutara 1.0.0: 307 signature lines, 0 missing.
+Verified against rajutara 1.5.0: 438 signature lines, 0 missing.
 
 ## Licence
 

@@ -33,7 +33,7 @@ use rajutara_nest::marker::props::MarkerSetup;
 use rajutara_nest::output::plot::{
     PlotTarget, header_lines, marker_job, plot_marker, setup_from_json,
 };
-use rajutara_nest::report::{ReportFmt, ReportMeta, report_data, write_csv_report};
+use rajutara_nest::report::{ReportFmt, ReportMeta, report_data, write_xlsx_report};
 use rajutara_nest::{NestMarkerOptions, nest_marker};
 use rajutara_pds::plot::job::plot_job;
 use rajutara_pds::tools::{FieldValue, Values};
@@ -535,7 +535,7 @@ fn main() -> Res<()> {
         measures.rib
     );
     fs::create_dir_all(out)?;
-    let optx = out.join(format!("{STEM}.optx"));
+    let optx = out.join(format!("{STEM}.rjx"));
     save_style(&style, &optx)?;
     let (embedded, issues) = embed_style(&optx, StyleRefId::from(0))?;
     ensure(issues.is_empty(), || format!("{issues:?}"))?;
@@ -580,7 +580,7 @@ fn main() -> Res<()> {
     );
 
     // 4. Outputs
-    let optm = out.join(format!("{STEM}-marker.optm"));
+    let optm = out.join(format!("{STEM}-marker.rjm"));
     save_marker(marker, &optm)?;
 
     let date = utc_now_stamp();
@@ -610,12 +610,12 @@ fn main() -> Res<()> {
     )?;
 
     let meta = ReportMeta {
-        file_name: format!("{STEM}-marker.optm"),
+        file_name: format!("{STEM}-marker.rjm"),
         date: date.clone(),
         fmt,
     };
     let data = report_data(marker, &mut book, &meta, &tr);
-    write_csv_report(&data, &out.join(format!("{STEM}-marker-report.csv")))?;
+    write_xlsx_report(&data, &out.join(format!("{STEM}-marker-report.xlsx")))?;
 
     let (pieces_job, _) = plot_job(&style, &Selection::default(), &pieces_values())?;
     plot_pdf(
@@ -644,7 +644,7 @@ fn main() -> Res<()> {
         "a saved file does not load back equal".to_owned()
     })?;
     println!(
-        "reload: {STEM}.optx ({} pieces, {} issues) and {STEM}-marker.optm ({} instances, {} issues) load equal",
+        "reload: {STEM}.rjx ({} pieces, {} issues) and {STEM}-marker.rjm ({} instances, {} issues) load equal",
         loaded_style.pieces.len(),
         style_issues.len(),
         loaded_marker.pieces.len(),

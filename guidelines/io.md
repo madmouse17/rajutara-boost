@@ -4,7 +4,7 @@ Every public loader and writer, re-exported at the crate root: `use rajutara_io:
 
 ## Native files
 
-`.optx` Style, `.optm` Marker, `.optc` Cut Plan: a zip container with `manifest.json` (`format`, `version`, `generator`) and `document.json`. A file saved by a newer rajutara is refused (`NewerVersion`). Loaders validate: errors refuse the file (`IoError::Invalid`), warnings are returned.
+`.rjx` Style, `.rjm` Marker, `.rjc` Cut Plan: a zip container with `manifest.json` (`format`, `version`, `generator`) and `document.json`, format version 2. A file saved by a newer format is refused (`NewerVersion`). Loaders validate: errors refuse the file (`IoError::Invalid`), warnings are returned. The loaders read the container whatever the extension, so the pre-rename optirust `.optx`, `.optm`, `.optc` files still load; the app saves them under the new extension. Fields added in 1.5.0 (Marker clusters, cut order, bump lines, flaws, texts; vertex names; Equal Segments Groups, Fabric Pattern, zones, Spread, Fixed Placement, Stripe Groups, piece colour, one-line label) are optional and did not bump the format: a 1.4.0 build opens such a file and drops them on re-save, and refuses a Style that uses Stack Along Line.
 
 ```rust sig
 pub fn load_style(path: &Path) -> Result<(Style, Vec<Issue>), IoError>
@@ -18,7 +18,7 @@ pub fn style_crc32(path: &Path) -> Result<u32, IoError>
 ```
 
 - `load_*` read and validate; `save_*` write atomically (see `write_atomic`).
-- `embed_style` loads a `.optx` as an `EmbeddedStyle` for a Marker or Cut Plan, remembering its path and CRC-32 (`source_crc32`) so a changed source is detectable; `style_crc32` recomputes it.
+- `embed_style` loads a `.rjx` as an `EmbeddedStyle` for a Marker or Cut Plan, remembering its path and CRC-32 (`source_crc32`) so a changed source is detectable; `style_crc32` recomputes it.
 
 ## DXF and RUL
 
@@ -27,6 +27,7 @@ ASTM D6673 and AAMA-292 DXF with ASTM RUL grade rules; plain DXF import. The imp
 ```rust sig
 pub fn import_dxf(path: &Path, opts: &DxfImportOptions) -> Result<(Style, Vec<ImportIssue>), IoError>
 pub fn import_dxf_cancellable(path: &Path, opts: &DxfImportOptions, cancelled: &dyn Fn() -> bool) -> Result<(Style, Vec<ImportIssue>), IoError>
+pub fn import_dxf_with_rul_cancellable(path: &Path, rul: Option<&Path>, opts: &DxfImportOptions, cancelled: &dyn Fn() -> bool) -> Result<(Style, Vec<ImportIssue>, DxfFileInfo), IoError>
 pub fn parse_dxf(bytes: &[u8], rul_text: Option<&str>, opts: &DxfImportOptions) -> Result<(Style, Vec<ImportIssue>), IoError>
 pub fn export_dxf(style: &Style, path: &Path, opts: &DxfExportOptions) -> Result<Vec<ImportIssue>, IoError>
 pub fn render_dxf(style: &Style, opts: &DxfExportOptions) -> Result<DxfExport, IoError>
@@ -39,6 +40,11 @@ pub flavor: DxfFlavor,
 pub units: Option<Unit>,
 pub tolerance: f64,
 pub build_sizes: bool,
+pub line_mode: LineKind,
+pub struct DxfFileInfo {
+pub unit_mm: f64,
+pub flavor: DxfFlavor,
+pub layers: BTreeMap<u16, usize>,
 pub struct DxfExportOptions {
 pub flavor: DxfFlavor,
 pub metric: bool,
@@ -52,6 +58,7 @@ pub fn write_rul_atomic(path: &Path, table: &RuleTable, sizes: &SizeTable, opts:
 
 - `import_dxf`: file in, `Style` out. `DxfImportOptions::default()` is the dialog default (`flavor: Auto`, tolerance 0.5 mm, `build_sizes: true`).
 - `import_dxf_cancellable`: same, for a worker thread; `cancelled` is polled between pieces; returns `IoError::Cancelled`.
+- `import_dxf_with_rul_cancellable`: the import wizard's call. `rul: Some(path)` replaces the lookup of the file named by `Grade Rule Table:`; the extra `DxfFileInfo` says what the file declared (unit, dialect, entities per layer). `line_mode: LineKind::Sew` (default) keeps the boundary as the sewing line; `Cut` keeps it as the cutting line and turns layer 14 into an internal Sew line.
 - `parse_dxf`: in-memory import; pass the `.rul` text yourself. The Style is named `Imported` when the file has no `Style Name:`.
 - `export_dxf` / `render_dxf`: write or render ASTM (default) or AAMA. `DxfFlavor::Auto` and `Plain` are refused on export. `GradingExport::RuleFile` writes base-size blocks plus a `.rul` next to the DXF, `GradedNest` one block per size, `BaseSizeOnly` no grading. Set `created` from `utc_now_stamp()`; the default is the epoch.
 - `read_rul` returns `(rule table, SIZE LIST, SAMPLE SIZE, issues)`; deltas are mm, cumulative from the sample size. `write_rul` renders the file text; `RulOptions { metric, positive_rule_numbers, created }`.
@@ -89,6 +96,23 @@ pub fn read_csv_rows(text: &str) -> Result<Vec<Vec<String>>, IoError>
 - `ReportDoc { title, sections }`; a `ReportSection` has a heading, facts and an optional `ReportTable`.
 - `write_csv`: struct rows get a header; `Vec<String>` rows are written as they are. Cells that would be read as formulas are quoted with a leading `'`.
 - `read_csv_rows` strips a UTF-8 BOM.
+
+## Excel workbooks (`rajutara_io::xlsx`, 1.5.0)
+
+```rust sig
+pub fn write_xlsx(rows: &[Vec<String>], sheet: &str, path: &Path) -> Result<(), IoError>
+pub fn write_workbook(sheets: &[Sheet<'_>], path: &Path) -> Result<(), IoError>
+pub fn render_workbook(sheets: &[Sheet<'_>]) -> Result<Vec<u8>, IoError>
+pub struct Sheet<'a> {
+pub name: &'a str,
+pub rows: &'a [Vec<String>],
+```
+
+- `write_xlsx` (re-exported at the root) writes one worksheet; `xlsx::write_workbook` several, in order; `render_workbook` returns the bytes. ECMA-376 SpreadsheetML, no styles, written through `write_atomic`. Used by File › Report to Excel.
+- Cells: a finite number with `.` as decimal mark becomes a number cell, except with a leading zero or more than 15 digits (codes and ids stay text); everything else is an inline string.
+- Sheet names: `[ ] : * ? / \` become `_`, cut to 31 characters, empty becomes `Sheet<n>`. `IoError::Refused` for no sheet, two names equal without case, or more than 1 048 576 rows or 16 384 columns.
+- Deterministic: fixed zip timestamps and part order, so the same rows give the same bytes (snapshot-testable).
+- The Marker's Report to Excel is `rajutara_nest::report::write_xlsx_report` (one sheet per section, `report::sheets`; see `nesting.md`); PDS's is in `rajutara_pds::tools::reports`. Cut Plan reports stay CSV and PDF.
 
 ## File-system helpers
 

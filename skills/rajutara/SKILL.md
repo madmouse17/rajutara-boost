@@ -16,4 +16,4 @@ Read `guidelines/rajutara.md` first (invariants: mm `f64`, no panic on user data
 - `guidelines/testing.md` — gates, kittest, insta, proptest.
 - `guidelines/style.md` — code rules and process.
 
-Runnable references: `examples/`. Every signature in the guidelines is checked against a checkout with `scripts/verify-signatures.py`.
+Runnable references: `examples/`. Every signature in the guidelines is checked against a checkout with `scripts/verify-signatures.py`; this pack matches rajutara 1.5.0 (`CHANGELOG.md`).

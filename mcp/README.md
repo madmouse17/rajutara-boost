@@ -8,10 +8,12 @@ All paths are absolute paths on the machine that runs the server. Errors come ba
 
 | Tool | Arguments | Returns |
 |---|---|---|
-| `rajutara_smoke` | `path` (`.optx`, `.optm`, `.optc` or `.dxf`) | Loads and validates the file; summary (pieces, sizes, Marker figures, Cut Plan counts) plus validation issues. A cheap "does this file open" check. |
+| `rajutara_smoke` | `path` (`.rjx`, `.rjm`, `.rjc` or `.dxf`; the pre-rename `.optx`, `.optm`, `.optc` too) | Loads and validates the file; summary (pieces, sizes, Marker figures with pinned pieces, clusters, cut order steps and flaws, Cut Plan counts) plus validation issues. A cheap "does this file open" check. |
 | `rajutara_import_dxf` | `path`, `rul?` | Imports an ASTM/AAMA/plain DXF; Style summary (sizes, base size, per-piece vertices, notches, graded points, base-size bounding box in mm), import issues, validation issues. Without `rul` the companion `.rul` named in the DXF is used. |
-| `rajutara_nest` | `optm`, `seconds`, `out?` | Nests the instances still waiting in the Piece Bar for `seconds` of wall-clock; `efficiency_pct`, `length_mm`, `unplaced`, `overlaps`, validation. Saves the nested Marker to `out` when given; the input file is never changed. A Marker whose instances are all placed returns `nothing to nest`. |
-| `rajutara_plot` | `optm`, `format` (`pdf` or `hpgl`), `out?` | Plots the placed pieces of a nested Marker: A0 PDF, or HPGL/2 on a roll as wide as the fabric plus 100 mm. Default output: next to the Marker (`.pdf` / `.plt`). Returns the path written. |
+| `rajutara_nest` | `marker`, `seconds`, `out?` | Nests the instances still waiting in the Piece Bar for `seconds` of wall-clock; `efficiency_pct`, `length_mm`, `unplaced`, `overlaps`, validation. Saves the nested Marker to `out` when given; the input file is never changed. A Marker whose instances are all placed returns `nothing to nest`. |
+| `rajutara_plot` | `marker`, `format` (`pdf` or `hpgl`), `out?` | Plots the placed pieces of a nested Marker: A0 PDF, or HPGL/2 on a roll as wide as the fabric plus 100 mm. Default output: next to the Marker (`.pdf` / `.plt`). Returns the path written. |
+
+Since 1.5.0 the Marker argument of `rajutara_nest` and `rajutara_plot` is `marker` (it was `optm`). Clusters, Fuse Blocks, pinned pieces and flaws in the Marker are respected by the nesting run.
 
 `seconds` uses `Stop::Time`, so results depend on machine speed (see `guidelines/nesting.md`).
 
@@ -28,10 +30,10 @@ The server depends on the rajutara crates by path. Clone both repos side by side
 cd ~/src/rajutara-boost/mcp
 cargo build --release          # first build compiles egui and friends: a few minutes
 ./check.sh                     # initialize + tools/list over stdio
-./check.sh /path/to/style.optx # ... plus one rajutara_smoke call
+./check.sh /path/to/style.rjx  # ... plus one rajutara_smoke call
 ```
 
-If the checkout lives elsewhere, edit the four `path = "../../rajutara/crates/..."` lines in `Cargo.toml`. `Cargo.lock` was seeded from the rajutara 1.0.0 lock file so dependency versions match the app. Use the same Rust toolchain as the checkout (`rust-toolchain.toml`, 1.99.1).
+If the checkout lives elsewhere, edit the four `path = "../../rajutara/crates/..."` lines in `Cargo.toml`. `Cargo.lock` was seeded from the rajutara lock file so dependency versions match the app; the server's version follows the rajutara release it was built against (1.5.0). Use the same Rust toolchain as the checkout (`rust-toolchain.toml`, 1.99.1).
 
 The binary is `mcp/target/release/rajutara-mcp`.
 
