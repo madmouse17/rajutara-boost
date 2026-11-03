@@ -8,7 +8,7 @@
 
 <p align="center">
   <img alt="Licence: MIT or Apache-2.0" src="https://img.shields.io/badge/licence-MIT%20OR%20Apache--2.0-d85820">
-  <img alt="Signatures verified against rajutara 1.5.0" src="https://img.shields.io/badge/signatures-verified%20against%201.5.0-111c2e">
+  <img alt="Signatures verified against rajutara 1.5.1" src="https://img.shields.io/badge/signatures-verified%20against%201.5.1-111c2e">
 </p>
 
 rajutara is a clean-room Rust rewrite of an apparel CAD suite: pattern design, grading, marker nesting and cut planning, as an `egui` app and as headless crates. An agent that has never seen it guesses at the model (millimetres, derived grading, `Stop::Time` vs `Stop::Iterations`) and breaks its rules. rajutara-boost gives the agent the facts, in the shape [Laravel Boost](https://github.com/laravel/boost) does for Laravel: guidelines it loads, an API reference with real signatures, examples that compile, and an MCP server that runs checks.
@@ -24,7 +24,7 @@ rajutara is a clean-room Rust rewrite of an apparel CAD suite: pattern design, g
 | [`guidelines/grading.md`](guidelines/grading.md), [`cutplan.md`](guidelines/cutplan.md) | Deriving sizes, rule commands, RUL export; Orders, lay solver, reports. | Load per workspace. |
 | [`guidelines/ui-modules.md`](guidelines/ui-modules.md) | Adding a workspace `Module`. | Load for UI work. |
 | [`guidelines/testing.md`](guidelines/testing.md), [`style.md`](guidelines/style.md) | Gates, the one-binary test layout, mold and nextest, the Optitex-names test, kittest, insta, proptest; the code rules of `AGENTS.md`. | Load before you claim done. |
-| [`examples/`](examples/) | `tshirt_sample.rs`, `import_dxf_to_pdf.rs`, `nest_from_rjx.rs`; compiled against rajutara 1.5.0. | Copy and adapt. |
+| [`examples/`](examples/) | `tshirt_sample.rs`, `import_dxf_to_pdf.rs`, `nest_from_rjx.rs`; compiled against rajutara 1.5.1. | Copy and adapt. |
 | [`mcp/`](mcp/) | Rust MCP server: `rajutara_smoke`, `rajutara_import_dxf`, `rajutara_nest`, `rajutara_plot`. | Let the agent check its work. |
 | [`skills/rajutara/`](skills/rajutara/) | The guidelines packaged as an agent skill. | Skill-aware agents. |
 | [`scripts/verify-signatures.py`](scripts/verify-signatures.py) | Checks every signature in the guidelines against a checkout. | Run after an rajutara update. |
@@ -90,7 +90,7 @@ Signatures in the guidelines sit in fenced blocks tagged ```` ```rust sig ````. 
 scripts/verify-signatures.py ~/src/rajutara     # exit 1 and the list of stale lines on drift
 ```
 
-Verified against rajutara 1.5.0: 438 signature lines, 0 missing.
+Verified against rajutara 1.5.1: 438 signature lines, 0 missing.
 
 ## Licence
 

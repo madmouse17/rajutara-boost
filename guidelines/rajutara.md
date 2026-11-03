@@ -43,4 +43,4 @@ Dependency direction: `core` <- `io` <- `ui` <- {`pds`, `grading`, `nest`, `cutp
 
 ## Toolchain
 
-Rust stable (`rust-toolchain.toml`: 1.99.1, edition 2024, resolver 3, MSRV 1.95). Workspace version 1.5.0. Gates, the test layout and build speed-ups are in `testing.md`.
+Rust stable (`rust-toolchain.toml`: 1.99.1, edition 2024, resolver 3, MSRV 1.95). Workspace version 1.5.1. Gates, the test layout and build speed-ups are in `testing.md`.

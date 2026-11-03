@@ -2,6 +2,10 @@
 
 All notable changes to rajutara-boost. Format: [Keep a Changelog](https://keepachangelog.com/). The version follows the rajutara release the guidelines, examples and MCP server were checked against.
 
+## [1.5.1] - 2026-11-04
+
+Tracks rajutara 1.5.1: bug fixes. One signature moved: `hole::insert_to_hole` takes a trailing `pick: f64` (pointer pick radius, mm). `scripts/verify-signatures.py` passes and the MCP server builds against the checkout. For operators: Stack Along Line is enabled by clicking near an outline in Grading, and Auto Nest Queue rows start as Regular. The crate version is 1.5.1.
+
 ## [1.5.0] - 2026-11-04
 
 Checked against rajutara 1.5.0: `scripts/verify-signatures.py` passes and the MCP server builds against the checkout.

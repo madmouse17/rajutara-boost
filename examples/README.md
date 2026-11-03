@@ -27,7 +27,7 @@ Why these crates: the examples use `rajutara-core`, `-io`, `-nest`, `-grading`, 
 
 ## Compiled proof
 
-Built on 2026-11-04 against the rajutara 1.5.0 checkout (rustc 1.99.1, edition 2024), from a scratch crate with path dependencies on the six crates above (the same code paths as copying the files into `crates/rajutara/examples/`):
+Built on 2026-11-04 against the rajutara 1.5.1 checkout (rustc 1.99.1, edition 2024), from a scratch crate with path dependencies on the six crates above (the same code paths as copying the files into `crates/rajutara/examples/`):
 
 ```text
 $ cargo build --release --examples

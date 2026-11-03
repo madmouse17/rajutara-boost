@@ -79,7 +79,7 @@ pub fn add_flaw(spec: FlawSpec) -> impl Command<Marker>
 pub fn import_flaws(specs: Vec<FlawSpec>) -> impl Command<Marker>
 pub fn remove_pieces_hitting_flaws(ids: Vec<InstanceId>) -> impl Command<Marker>
 pub fn obstacles(marker: &Marker) -> Vec<(NestItem, Placed)>
-pub fn insert_to_hole(marker: &Marker, book: &mut ShapeBook, id: InstanceId, delta: Vec2) -> Result<Pose, HoleError>
+pub fn insert_to_hole(marker: &Marker, book: &mut ShapeBook, id: InstanceId, delta: Vec2, pick: f64) -> Result<Pose, HoleError>
 pub fn insert_command(id: InstanceId, pose: Pose) -> impl Command<Marker>
 pub fn sequence(marker: &Marker, book: &mut ShapeBook) -> Vec<Cut>
 pub fn optimize(marker: &Marker, book: &mut ShapeBook, opts: OptimizeOptions) -> Vec<CutStep>
@@ -90,7 +90,7 @@ pub fn cut_job(marker: &Marker, book: &mut ShapeBook) -> Result<PlotJob, PlotErr
 - `commands::set_pinned` (Fix on Marker): a pinned placed instance is a fixed obstacle even with `keep_placed: false`.
 - `cluster::make_cluster` (Cluster Pieces; with `Some(FuseBlock)` a Block Fuse): check first with `cluster::check_new`. A cluster is nested as one item (`cluster::nesting_ring`, the border for a Fuse Block) and is never split; it only translates.
 - `commands::add_flaw` / `import_flaws` (rows parsed by `flaws::parse_csv`): `flaws::obstacles` makes every flaw a fixed obstacle, so neither Auto Nesting nor Place All puts a piece on one.
-- `hole::insert_to_hole(&marker, &mut book, id, delta) -> Result<Pose, HoleError>` finds the nearest free spot that fits a dragged placed piece (any allowed orientation, then a Shoot along `delta`); apply it with `hole::insert_command`. Refused for a cluster member or when nothing fits within reach.
+- `hole::insert_to_hole(&marker, &mut book, id, delta, pick) -> Result<Pose, HoleError>` finds the nearest free spot that fits a dragged placed piece (any allowed orientation, then a Shoot along `delta`); apply it with `hole::insert_command`. `pick` is the pointer pick radius in mm: a hole with no room to spare counts within `pick` or `HOLE_SNAP_MM` of the drop (1.5.1). Refused for a cluster member or when nothing fits within reach.
 - `cutting::optimize` orders the cuts nearest-neighbour from the table corner (`OptimizeOptions { from_top, choose_starts }`); `set_cut_order` stores the steps. `output::cutfile::cut_job` follows `Marker.cut_order`, each start vertex and knife direction (clockwise by default), and cuts a Fuse Block as its border alone; write it with `cutfile::write_cutfile`.
 - Flaws and bump lines block placement but never add to the used length or the Efficiency.
 
